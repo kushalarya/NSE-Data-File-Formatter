@@ -19,17 +19,22 @@ while [ "$i" -le "$limit" ]; do
   echo "------"
   echo "Downloading ZIP for date: $currentDate"
   curl "${baseUrl}/${currentYear}/${currentMonth}/cm${currentDate}bhav.csv.zip" --output "./downloadedFiles/${currentDate}.zip"
+  echo "Download complete."
+  echo "Checking File now"
+
   currentFile=$(cat "./downloadedFiles/${currentDate}.zip" | grep "404")
   if [ -z "$currentFile" ]
   then
-	  echo "File found. Let me unzip it"
+	  echo "File found and is good to Unzip. Let me unzip.."
 	  unzip ./downloadedFiles/${currentDate}.zip -d ./downloadedUnzipedFiles/
 	  currentDateFormatted=$(date -d"${currentDate}" +%Y-%m-%d)	  
 	  grep "EQ" "./downloadedUnzipedFiles/cm${currentDate}bhav.csv" | awk -F, '{print $1 ", " cfd ", " $3 ", " $4 ", " $5 ", " $6 ", " $9}' cfd=${currentDateFormatted} > ./finalFiles/${currentDateFormatted}.csv
   else
-	  echo "File was not found. Removing this file."
+	  echo "File was not found when trying to download. Removing this file from local."
 	  rm ./downloadedFiles/${currentDate}.zip
   fi
   echo ""
   i=$(($i+1))
 done
+
+echo "Download complete. Enjoy your day."
